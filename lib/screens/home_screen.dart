@@ -10,6 +10,11 @@ import '../models/bus_stop.dart';
 import '../models/bus_route.dart';
 import 'stops_screen.dart';
 
+enum MapTileType {
+  streets,
+  satellite,
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,17 +25,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
   bool _followBus = true;
+  MapTileType _currentTileType = MapTileType.streets;
 
   // ── Coordenadas del campus ────────────────────────────────────────────────
-  static const LatLng _campusCenter = LatLng(22.2769, -97.8624);
-  static const double _defaultZoom = 16.2;
-  static const double _minZoom = 15.5;
+  static const LatLng _campusCenter = LatLng(22.2768, -97.8624);
+  static const double _defaultZoom = 16.3;
+  static const double _minZoom = 14.8;
   static const double _maxZoom = 18.5;
 
-  // Bounding box del campus — limita el scroll del mapa
+  // Bounding box del campus — permite navegar con soltura alrededor de la universidad
   static final LatLngBounds _campusBounds = LatLngBounds(
-    const LatLng(22.2735, -97.8680), // SW
-    const LatLng(22.2815, -97.8575), // NE
+    const LatLng(22.2710, -97.8700), // SW
+    const LatLng(22.2840, -97.8550), // NE
   );
 
   @override
@@ -75,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           final route = tracker.route!;
           final estimation = tracker.estimation;
 
-          // Auto-seguir el bus
+          // Auto-seguir el bus si está activo
           if (_followBus && estimation != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               try {
@@ -84,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             });
           }
 
-          // Waypoints para línea de ruta pulida (sigue caminos del campus)
+          // Waypoints para línea de ruta que sigue las calles del campus
           final List<LatLng> routePolyline = _buildRoutePolyline(route);
 
           return Stack(
@@ -97,7 +103,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   initialZoom: _defaultZoom,
                   minZoom: _minZoom,
                   maxZoom: _maxZoom,
-                  // Limitar el scroll al área del campus
                   cameraConstraint: CameraConstraint.containCenter(
                     bounds: _campusBounds,
                   ),
@@ -109,38 +114,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                 ),
                 children: [
-                  // Tiles oscuros estilo CartoDB Dark Matter
-                  TileLayer(
-                    urlTemplate:
-                        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                    subdomains: const ['a', 'b', 'c', 'd'],
-                    userAgentPackageName: 'com.uat.bus_tracker_uat',
-                    maxZoom: 19,
-                    maxNativeZoom: 19,
-                  ),
+                  // Capa de mosaicos sin necesidad de API key
+                  if (_currentTileType == MapTileType.streets)
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.uat.bus_tracker_uat',
+                      maxZoom: 19,
+                      maxNativeZoom: 19,
+                    )
+                  else
+                    TileLayer(
+                      urlTemplate:
+                          'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                      userAgentPackageName: 'com.uat.bus_tracker_uat',
+                      maxZoom: 19,
+                      maxNativeZoom: 19,
+                    ),
 
-                  // Sombra/glow de la ruta (capa inferior más gruesa)
+                  // Resplandor exterior de la ruta
                   PolylineLayer(
                     polylines: [
                       Polyline(
                         points: routePolyline,
-                        color: AppColors.routeBlue.withOpacity(0.25),
-                        strokeWidth: 16.0,
-                        borderColor: Colors.transparent,
-                        borderStrokeWidth: 0,
+                        color: const Color(0xFF0288D1).withOpacity(0.35),
+                        strokeWidth: 14.0,
+                        strokeCap: StrokeCap.round,
+                        strokeJoin: StrokeJoin.round,
                       ),
                     ],
                   ),
 
-                  // Línea de ruta principal (azul eléctrico)
+                  // Borde exterior contrastante
                   PolylineLayer(
                     polylines: [
                       Polyline(
                         points: routePolyline,
-                        color: AppColors.routeBlueBright,
-                        strokeWidth: 5.0,
-                        borderColor: Colors.white.withOpacity(0.15),
-                        borderStrokeWidth: 1.5,
+                        color: Colors.white.withOpacity(0.9),
+                        strokeWidth: 6.5,
+                        strokeCap: StrokeCap.round,
+                        strokeJoin: StrokeJoin.round,
+                      ),
+                    ],
+                  ),
+
+                  // Línea de ruta principal (azul eléctrico nítido)
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                        points: routePolyline,
+                        color: const Color(0xFF0288D1),
+                        strokeWidth: 4.5,
                         strokeCap: StrokeCap.round,
                         strokeJoin: StrokeJoin.round,
                       ),
@@ -173,24 +197,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             color: AppColors.surface.withOpacity(0.95),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppColors.routeBlue.withOpacity(0.3),
+                              color: AppColors.routeBlue.withOpacity(0.35),
                               width: 1,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
+                                color: Colors.black.withOpacity(0.35),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
                           child: Row(
                             children: [
                               Container(
-                                width: 8,
-                                height: 8,
+                                width: 10,
+                                height: 10,
                                 decoration: const BoxDecoration(
-                                  color: AppColors.routeBlueBright,
+                                  color: Color(0xFF0288D1),
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -211,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      'Campus Sur · UAT',
+                                      'Campus Sur · UAT (Tampico)',
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: AppColors.textSecondary,
@@ -239,9 +263,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // ── BOTONES FLOTANTES (derecha) ────────────────────────────────
               Positioned(
                 right: 12,
-                bottom: 190,
+                bottom: 195,
                 child: Column(
                   children: [
+                    // Cambiar tipo de mapa (Calles / Satélite)
+                    _mapFab(
+                      icon: _currentTileType == MapTileType.streets
+                          ? Icons.satellite_alt_rounded
+                          : Icons.map_rounded,
+                      tooltip: _currentTileType == MapTileType.streets
+                          ? 'Cambiar a Satélite'
+                          : 'Cambiar a Calles',
+                      onPressed: () {
+                        setState(() {
+                          _currentTileType = _currentTileType == MapTileType.streets
+                              ? MapTileType.satellite
+                              : MapTileType.streets;
+                        });
+                      },
+                      active: _currentTileType == MapTileType.satellite,
+                    ),
+                    const SizedBox(height: 8),
                     _mapFab(
                       icon: Icons.my_location_rounded,
                       tooltip: 'Centrar en el bus',
@@ -300,11 +342,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   // ── Construir polyline con waypoints del JSON ─────────────────────────────
   List<LatLng> _buildRoutePolyline(BusRoute route) {
-    // Si route.waypoints está disponible, usarlo
     if (route.waypoints.isNotEmpty) {
       return route.waypoints;
     }
-    // Fallback: línea directa entre paradas
     return route.stops.map((s) => s.position).toList()
       ..add(route.stops.first.position);
   }
@@ -363,14 +403,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         color: AppColors.card,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: accentColor.withOpacity(0.25),
+          color: accentColor.withOpacity(0.3),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 16,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
@@ -381,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Container(
             width: 40,
             height: 4,
-            margin: const EdgeInsets.only(top: 10, bottom: 14),
+            margin: const EdgeInsets.only(top: 10, bottom: 12),
             decoration: BoxDecoration(
               color: AppColors.textMuted.withOpacity(0.5),
               borderRadius: BorderRadius.circular(2),
@@ -389,15 +429,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
 
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
             child: Column(
               children: [
                 Row(
                   children: [
-                    // Icono de estado
                     Container(
-                      width: 48,
-                      height: 48,
+                      width: 46,
+                      height: 46,
                       decoration: BoxDecoration(
                         color: accentColor.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(14),
@@ -438,11 +477,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _modeBadge(tracker),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 // Indicador de actualización
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 5),
+                      horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
@@ -515,34 +554,75 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return '$h:$m';
   }
 
-  // ── MARCADOR DE PARADA (estilo escudo/badge) ──────────────────────────────
+  // ── MARCADOR DE PARADA (Estilo Escudo + Nombre Elegante) ──────────────────
   Marker _buildStopMarker(BusStop stop) {
     final isTerminal = stop.isTerminal;
-    final bgColor = isTerminal ? AppColors.uatOrange : AppColors.uatOrange;
-    final badgeSize = isTerminal ? 52.0 : 44.0;
+    const badgeColor = AppColors.uatOrange;
+    const badgeWidth = 44.0;
+    const badgeHeight = 44.0;
 
     return Marker(
       point: stop.position,
-      width: badgeSize + 4,
-      height: badgeSize + 20,
-      alignment: const Alignment(0, -0.6),
+      width: 70,
+      height: 72,
+      alignment: const Alignment(0, -0.7),
       child: GestureDetector(
         onTap: () => _showStopInfo(stop),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Badge superior (escudo)
-            _StopBadge(
-              icon: _stopIcon(stop.icon),
-              label: stop.name,
-              size: badgeSize,
-              color: bgColor,
-              isTerminal: isTerminal,
+            // Escudo con icono
+            Container(
+              width: badgeWidth,
+              height: badgeHeight,
+              decoration: BoxDecoration(
+                color: badgeColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isTerminal ? Colors.amberAccent : Colors.white,
+                  width: isTerminal ? 2.5 : 1.8,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.4),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Icon(
+                _stopIcon(stop.icon),
+                color: Colors.white,
+                size: 24,
+              ),
             ),
-            // Punta inferior del badge
+            // Punta inferior
             CustomPaint(
-              size: const Size(12, 8),
-              painter: _BadgePointerPainter(color: bgColor),
+              size: const Size(10, 6),
+              painter: _BadgePointerPainter(color: badgeColor),
+            ),
+            const SizedBox(height: 2),
+            // Etiqueta con el nombre de la facultad
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.75),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 0.5,
+                ),
+              ),
+              child: Text(
+                stop.name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.3,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -554,31 +634,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Marker _buildBusMarker(LatLng position) {
     return Marker(
       point: position,
-      width: 56,
-      height: 56,
+      width: 58,
+      height: 58,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Glow exterior
+          // Resplandor exterior
           Container(
-            width: 56,
-            height: 56,
+            width: 58,
+            height: 58,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.routeBlue.withOpacity(0.2),
+              color: const Color(0xFF0288D1).withOpacity(0.3),
             ),
           ),
           // Círculo principal
           Container(
-            width: 42,
-            height: 42,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: AppColors.routeBlue,
+              color: const Color(0xFF0288D1),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
+              border: Border.all(color: Colors.white, width: 2.5),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.routeBlue.withOpacity(0.6),
+                  color: const Color(0xFF0288D1).withOpacity(0.6),
                   blurRadius: 14,
                   spreadRadius: 2,
                 ),
@@ -587,7 +667,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: const Icon(
               Icons.directions_bus_filled_rounded,
               color: Colors.white,
-              size: 22,
+              size: 24,
             ),
           ),
         ],
@@ -631,7 +711,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Handle
             Center(
               child: Container(
                 width: 40,
@@ -656,36 +735,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       color: AppColors.uatOrange, size: 24),
                 ),
                 const SizedBox(width: 14),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      stop.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    if (stop.isTerminal)
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.uatOrange.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        stop.name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
                         ),
-                        child: const Text(
-                          'Terminal',
-                          style: TextStyle(
-                            color: AppColors.uatOrange,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                      ),
+                      if (stop.isTerminal)
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.uatOrange.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Text(
+                            'Terminal Principal',
+                            style: TextStyle(
+                              color: AppColors.uatOrange,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -740,7 +821,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withOpacity(0.35),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -766,18 +847,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           height: 42,
           decoration: BoxDecoration(
             color: active
-                ? AppColors.routeBlue.withOpacity(0.9)
+                ? const Color(0xFF0288D1)
                 : AppColors.surface.withOpacity(0.95),
             borderRadius: BorderRadius.circular(13),
             border: Border.all(
               color: active
-                  ? AppColors.routeBlue
+                  ? const Color(0xFF0288D1)
                   : AppColors.routeBlue.withOpacity(0.25),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withOpacity(0.35),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -789,68 +870,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             size: 20,
           ),
         ),
-      ),
-    );
-  }
-}
-
-// ── Widget: Badge estilo escudo para paradas ──────────────────────────────────
-class _StopBadge extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final double size;
-  final Color color;
-  final bool isTerminal;
-
-  const _StopBadge({
-    required this.icon,
-    required this.label,
-    required this.size,
-    required this.color,
-    this.isTerminal = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(size * 0.22),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.5),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ],
-        border: isTerminal
-            ? Border.all(color: Colors.white, width: 2)
-            : null,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: Colors.white, size: size * 0.38),
-          if (size >= 48) ...[
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: size * 0.16,
-                fontWeight: FontWeight.bold,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ],
       ),
     );
   }

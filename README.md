@@ -10,7 +10,7 @@ Puedes descargar e instalar directamente el archivo APK en tu dispositivo Androi
 
 | Versión | Archivo APK | Descripción |
 |---|---|---|
-| **v2.0.0 (Actual)** | [Bus_UAT_Campus_Sur_v2.0.0.apk](releases/Bus_UAT_Campus_Sur_v2.0.0.apk) | Mapa delimitado, ruta perimetral precisa con waypoints, tema oscuro CartoDB, iconos tipo badge y nuevo icono de app. |
+| **v2.0.0 (Actual)** | [Bus_UAT_Campus_Sur_v2.0.0.apk](releases/Bus_UAT_Campus_Sur_v2.0.0.apk) | Mapa delimitado, calles y facultades 100% visibles (OpenStreetMap & Satélite ESRI sin requerir claves de API), ruta perimetral precisa con waypoints, tema oscuro y nuevos iconos. |
 | **v1.0.0 (Inicial)** | [Bus_UAT_Campus_Sur_v1.0.0.apk](releases/Bus_UAT_Campus_Sur_v1.0.0.apk) | Versión inicial con mapa estándar OSM y tema naranja. |
 
 > 💡 El archivo [Bus_UAT_Campus_Sur.apk](Bus_UAT_Campus_Sur.apk) en la raíz siempre corresponde a la **versión más reciente**.
@@ -19,7 +19,9 @@ Puedes descargar e instalar directamente el archivo APK en tu dispositivo Androi
 
 ## ✨ Novedades en v2.0.0
 
-- 🗺️ **Mapa delimitado al Campus Sur**: Bounding box fijo (`22.2735, -97.8680` a `22.2815, -97.8575`) que impide desplazarse fuera del campus universitario.
+- 🗺️ **Calles y facultades 100% visibles sin claves de API**: Se utiliza OpenStreetMap nativo (con nombres de todas las calles, facultades y edificios del campus) y vista alternativa satelital (ESRI World Imagery), eliminando cualquier error o marca de agua de API.
+- 🛰️ **Selector de vista (Calles / Satélite)**: Botón flotante para alternar entre el mapa de calles y la vista fotográfica aérea de la universidad.
+- 🔒 **Mapa delimitado al Campus Sur**: Bounding box optimizado (`22.2710, -97.8700` a `22.2840, -97.8550`) que impide desplazarse fuera de la zona universitaria.
 - 🛣️ **Ruta perimetral con waypoints**: La línea de trayectoria ahora sigue los caminos reales del campus (trayectoria rectangular limpia) en lugar de trazos rectos entre paradas.
 - 🎨 **Paleta de colores moderna & Tema oscuro**:
   - Fondo: Navy oscuro `#0D1B2A`
