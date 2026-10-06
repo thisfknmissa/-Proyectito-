@@ -1,0 +1,34 @@
+name: bus_tracker_uat
+description: Rastreador de autobús del Campus Sur UAT sin GPS físico
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Mapa OpenStreetMap (sin API key)
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+
+  # State management
+  provider: ^6.1.2
+
+  # Persistencia local (guardar hora de salida)
+  shared_preferences: ^2.3.2
+
+  # Iconos y UI
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/route.json
