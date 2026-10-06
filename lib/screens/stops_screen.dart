@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../main.dart';
 import '../providers/bus_tracker_provider.dart';
 import '../models/bus_stop.dart';
 import '../services/bus_estimator.dart';
@@ -11,17 +12,50 @@ class StopsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Paradas y Tiempos'),
-        backgroundColor: const Color(0xFFE65100),
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: AppColors.textPrimary, size: 18),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Paradas',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
+              ),
+            ),
+            Text(
+              'Campus Sur · UAT',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(
+            height: 1,
+            color: AppColors.routeBlue.withOpacity(0.2),
+          ),
+        ),
       ),
       body: Consumer<BusTrackerProvider>(
         builder: (context, tracker, _) {
           final route = tracker.route;
           if (route == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.routeBlue),
+            );
           }
 
           final departure = tracker.activeDepartureTime;
@@ -34,16 +68,14 @@ class StopsScreen extends StatelessWidget {
             );
           }
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             itemCount: route.stops.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final stop = route.stops[index];
               final eta = etas.isNotEmpty ? etas[index] : null;
               final estimation = tracker.estimation;
 
-              // Determine status
               final isCurrent = estimation != null &&
                   !estimation.hasCompleted &&
                   !estimation.notYetDeparted &&
@@ -52,10 +84,11 @@ class StopsScreen extends StatelessWidget {
               final hasPassed = eta?.hasPassed ?? false;
               final isAhead = !hasPassed && !isCurrent;
 
-              return _buildStopCard(
+              return _buildStopTile(
                 context: context,
                 stop: stop,
                 index: index,
+                totalStops: route.stops.length,
                 eta: eta,
                 isCurrent: isCurrent,
                 hasPassed: hasPassed,
@@ -69,123 +102,239 @@ class StopsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStopCard({
+  Widget _buildStopTile({
     required BuildContext context,
     required BusStop stop,
     required int index,
+    required int totalStops,
     required StopEta? eta,
     required bool isCurrent,
     required bool hasPassed,
     required bool isAhead,
     required double errorMargin,
   }) {
-    Color cardColor;
-    Color iconColor;
-    IconData statusIcon;
-    String etaText;
+    final Color lineColor;
+    final Color dotColor;
+    final Color cardBg;
+    final Color iconColor;
+    final String etaText;
 
     if (isCurrent) {
-      cardColor = const Color(0xFFE65100).withOpacity(0.08);
-      iconColor = const Color(0xFFE65100);
-      statusIcon = Icons.directions_bus;
+      lineColor = AppColors.routeBlue;
+      dotColor = AppColors.routeBlue;
+      cardBg = AppColors.routeBlue.withOpacity(0.08);
+      iconColor = AppColors.routeBlue;
       etaText = 'El bus está cerca';
     } else if (hasPassed) {
-      cardColor = Colors.grey.shade100;
-      iconColor = Colors.grey;
-      statusIcon = Icons.check_circle;
+      lineColor = AppColors.passed;
+      dotColor = AppColors.passed;
+      cardBg = Colors.transparent;
+      iconColor = AppColors.textMuted;
       etaText = 'Ya pasó';
     } else {
-      cardColor = Colors.white;
-      iconColor = const Color(0xFFE65100);
-      statusIcon = Icons.schedule;
+      lineColor = AppColors.routeBlue.withOpacity(0.4);
+      dotColor = AppColors.uatOrange;
+      cardBg = AppColors.card;
+      iconColor = AppColors.uatOrange;
       if (eta != null && eta.etaMinutes > 0) {
         final mins = eta.etaMinutes.round();
         final margin = errorMargin.round();
-        etaText = 'En ~$mins min ± $margin min';
+        etaText = '~$mins min  ±$margin min';
       } else {
         etaText = 'Esperando datos';
       }
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: isCurrent
-            ? Border.all(color: const Color(0xFFE65100), width: 2)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    final isLast = index == totalStops - 1;
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── Timeline visual ──────────────────────────────────────────────
+          SizedBox(
+            width: 44,
+            child: Column(
+              children: [
+                // Línea superior (excepto primera parada)
+                if (index > 0)
+                  Expanded(
+                    child: Center(
+                      child: Container(
+                        width: 2,
+                        color: lineColor,
+                      ),
+                    ),
+                  )
+                else
+                  const SizedBox(height: 8),
+
+                // Punto de parada
+                Container(
+                  width: isCurrent ? 16 : 12,
+                  height: isCurrent ? 16 : 12,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: dotColor,
+                    border: isCurrent
+                        ? Border.all(color: Colors.white, width: 2)
+                        : null,
+                    boxShadow: isCurrent
+                        ? [
+                            BoxShadow(
+                              color: AppColors.routeBlue.withOpacity(0.5),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            )
+                          ]
+                        : null,
+                  ),
+                ),
+
+                // Línea inferior (excepto última parada)
+                if (!isLast)
+                  Expanded(
+                    child: Center(
+                      child: Container(
+                        width: 2,
+                        color: lineColor,
+                      ),
+                    ),
+                  )
+                else
+                  const SizedBox(height: 8),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 8),
+
+          // ── Tarjeta de parada ─────────────────────────────────────────────
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(16),
+                border: isCurrent
+                    ? Border.all(
+                        color: AppColors.routeBlue.withOpacity(0.5),
+                        width: 1.5)
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  // Icono de la parada
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: iconColor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(_stopIcon(stop.icon),
+                        color: iconColor, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Texto
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              stop.name,
+                              style: TextStyle(
+                                fontWeight: isCurrent
+                                    ? FontWeight.bold
+                                    : FontWeight.w600,
+                                fontSize: 14,
+                                color: hasPassed
+                                    ? AppColors.textMuted
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                            if (stop.isTerminal) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color:
+                                      AppColors.uatOrange.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text(
+                                  'Terminal',
+                                  style: TextStyle(
+                                    color: AppColors.uatOrange,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          stop.description,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: hasPassed
+                                ? AppColors.textMuted
+                                : AppColors.textSecondary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // ETA
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isCurrent
+                            ? Icons.directions_bus_filled_rounded
+                            : hasPassed
+                                ? Icons.check_circle_rounded
+                                : Icons.schedule_rounded,
+                        color: isCurrent
+                            ? AppColors.routeBlue
+                            : hasPassed
+                                ? AppColors.success
+                                : AppColors.textMuted,
+                        size: 16,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        etaText,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isCurrent
+                              ? AppColors.routeBlue
+                              : AppColors.textMuted,
+                          fontWeight: isCurrent
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
-      ),
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            CircleAvatar(
-              backgroundColor: iconColor.withOpacity(0.12),
-              child: Icon(_stopIcon(stop.icon), color: iconColor, size: 22),
-            ),
-            if (isCurrent)
-              Positioned(
-                right: -4,
-                bottom: -4,
-                child: Container(
-                  width: 14,
-                  height: 14,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE65100),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.directions_bus,
-                      color: Colors.white, size: 9),
-                ),
-              ),
-          ],
-        ),
-        title: Text(
-          stop.name,
-          style: TextStyle(
-            fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
-            color: hasPassed ? Colors.grey : Colors.black87,
-          ),
-        ),
-        subtitle: Text(
-          stop.description,
-          style: TextStyle(
-              fontSize: 12,
-              color: hasPassed ? Colors.grey.shade400 : Colors.grey.shade600),
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Icon(statusIcon,
-                color: isCurrent
-                    ? const Color(0xFFE65100)
-                    : hasPassed
-                        ? Colors.green
-                        : Colors.grey,
-                size: 18),
-            const SizedBox(height: 4),
-            Text(
-              etaText,
-              style: TextStyle(
-                fontSize: 11,
-                color: isCurrent ? const Color(0xFFE65100) : Colors.grey,
-                fontWeight:
-                    isCurrent ? FontWeight.bold : FontWeight.normal,
-              ),
-              textAlign: TextAlign.right,
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -193,23 +342,23 @@ class StopsScreen extends StatelessWidget {
   IconData _stopIcon(String icon) {
     switch (icon) {
       case 'gym':
-        return Icons.fitness_center;
+        return Icons.fitness_center_rounded;
       case 'books':
-        return Icons.menu_book;
+        return Icons.menu_book_rounded;
       case 'booth':
-        return Icons.local_police;
+        return Icons.security_rounded;
       case 'food':
-        return Icons.restaurant;
+        return Icons.restaurant_rounded;
       case 'fit':
-        return Icons.engineering;
+        return Icons.engineering_rounded;
       case 'fadycs':
-        return Icons.gavel;
+        return Icons.balance_rounded;
       case 'fadu':
-        return Icons.architecture;
+        return Icons.architecture_rounded;
       case 'fcat':
-        return Icons.biotech;
+        return Icons.show_chart_rounded;
       default:
-        return Icons.place;
+        return Icons.place_rounded;
     }
   }
 }

@@ -1,11 +1,12 @@
-﻿import 'bus_stop.dart';
+import 'package:latlong2/latlong.dart';
+import 'bus_stop.dart';
 
 class PeakHour {
   final int startHour;
   final int startMinute;
   final int endHour;
   final int endMinute;
-  final double speedFactor;
+  final double speedFactor; // < 1.0 means slower
 
   const PeakHour({
     required this.startHour,
@@ -49,6 +50,7 @@ class BusRoute {
   final int lastDepartureMinute;
   final List<BusStop> stops;
   final List<PeakHour> peakHours;
+  final List<LatLng> waypoints;
 
   const BusRoute({
     required this.routeName,
@@ -64,6 +66,7 @@ class BusRoute {
     required this.lastDepartureMinute,
     required this.stops,
     required this.peakHours,
+    this.waypoints = const [],
   });
 
   factory BusRoute.fromJson(Map<String, dynamic> json) {
@@ -88,9 +91,18 @@ class BusRoute {
       peakHours: (json['peak_hours'] as List<dynamic>)
           .map((p) => PeakHour.fromJson(p as Map<String, dynamic>))
           .toList(),
+      waypoints: json['waypoints'] != null
+          ? (json['waypoints'] as List<dynamic>)
+              .map((w) => LatLng(
+                    (w['lat'] as num).toDouble(),
+                    (w['lng'] as num).toDouble(),
+                  ))
+              .toList()
+          : const [],
     );
   }
 
+  /// Effective speed considering peak hours
   double effectiveSpeedKmh(DateTime at) {
     for (final peak in peakHours) {
       if (peak.isActive(at)) {

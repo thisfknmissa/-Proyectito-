@@ -1,118 +1,85 @@
 # 🚌 Bus Tracker UAT Campus Sur
 
-App Flutter para rastrear el autobús interno del Campus Sur de la UAT (Tampico) **sin GPS físico ni backend**.
-
-## ¿Cómo funciona?
-
-La app estima la posición del bus usando **interpolación geoespacial basada en tiempo y velocidad promedio**:
-
-```
-progreso = tiempo_transcurrido / tiempo_estimado_del_segmento
-posición = parada_A + progreso × (parada_B - parada_A)
-```
-
-- Velocidad promedio: 25 km/h (ajustable en `assets/route.json`)
-- Hora pico 7–8h y 13–15h: velocidad reducida al 75%
-- Margen de error: ±N minutos mostrado en pantalla
-- Frecuencia de salidas: cada 15 minutos, 6:00–21:00
-- Auto-refresh: cada 15 segundos
-
-## Paradas (en orden de ruta)
-
-| # | Nombre | Lat | Lng |
-|---|--------|-----|-----|
-| 1 | GYM (Terminal) | 22.275853 | -97.859407 |
-| 2 | Libros | 22.276427 | -97.859229 |
-| 3 | Caseta | 22.278889 | -97.861007 |
-| 4 | Comida | 22.278312 | -97.865283 |
-| 5 | FIT | 22.277021 | -97.865473 |
-| 6 | FADYCS | 22.275560 | -97.865483 |
-| 7 | FADU | 22.275011 | -97.864104 |
-| 8 | FCAT | 22.274985 | -97.862748 |
+App Flutter para rastrear el autobús interno del Campus Sur de la Universidad Autónoma de Tamaulipas (Tampico) **sin necesidad de GPS físico ni conexión a internet/backend**.
 
 ---
 
-## 📦 Cómo compilar el APK
+## 📥 Descargas de APK
 
-### Requisitos previos
+Puedes descargar e instalar directamente el archivo APK en tu dispositivo Android:
 
-1. **Instalar Flutter SDK** (si no lo tienes):
-   - Descarga desde: https://docs.flutter.dev/get-started/install/windows/mobile
-   - Extrae a `C:\src\flutter`
-   - Agrega `C:\src\flutter\bin` al PATH del sistema
-   - Reinicia la terminal
+| Versión | Archivo APK | Descripción |
+|---|---|---|
+| **v2.0.0 (Actual)** | [Bus_UAT_Campus_Sur_v2.0.0.apk](releases/Bus_UAT_Campus_Sur_v2.0.0.apk) | Mapa delimitado, ruta perimetral precisa con waypoints, tema oscuro CartoDB, iconos tipo badge y nuevo icono de app. |
+| **v1.0.0 (Inicial)** | [Bus_UAT_Campus_Sur_v1.0.0.apk](releases/Bus_UAT_Campus_Sur_v1.0.0.apk) | Versión inicial con mapa estándar OSM y tema naranja. |
 
-2. **Instalar Android Studio** (para el SDK de Android):
-   - Descarga desde: https://developer.android.com/studio
-   - Durante la instalación, instala el Android SDK (API 33 o superior)
+> 💡 El archivo [Bus_UAT_Campus_Sur.apk](Bus_UAT_Campus_Sur.apk) en la raíz siempre corresponde a la **versión más reciente**.
 
-3. **Verificar instalación**:
-   ```powershell
-   flutter doctor
-   ```
+---
 
-### Compilar el APK
+## ✨ Novedades en v2.0.0
+
+- 🗺️ **Mapa delimitado al Campus Sur**: Bounding box fijo (`22.2735, -97.8680` a `22.2815, -97.8575`) que impide desplazarse fuera del campus universitario.
+- 🛣️ **Ruta perimetral con waypoints**: La línea de trayectoria ahora sigue los caminos reales del campus (trayectoria rectangular limpia) en lugar de trazos rectos entre paradas.
+- 🎨 **Paleta de colores moderna & Tema oscuro**:
+  - Fondo: Navy oscuro `#0D1B2A`
+  - Línea de ruta: Azul eléctrico `#1E88E5` / `#42A5F5` con efecto glow
+  - Paradas: Naranja institucional UAT `#E65100`
+  - Tarjetas y superficies: Azul pizarra `#1A2942` / `#1E3350`
+- 🏷️ **Marcadores tipo Escudo (Badge)**: Iconos estilizados en forma de escudo con indicador de punta triangular orientada al suelo.
+- 🚌 **Marcador del autobús**: Círculo azul vibrante con halo de resplandor (glow) exterior.
+- 📱 **Pantalla de Paradas con Timeline**: Vista tipo línea de tiempo con colores por estado (ya pasó, cerca, próxima).
+- 🖼️ **Nuevo icono de la aplicación**: Icono de autobús con diseño moderno sobre fondo navy con siglas UAT.
+- 🔍 **Botón "Ver campus completo"**: Centra y ajusta la cámara al perímetro total del campus.
+
+---
+
+## ⚙️ ¿Cómo funciona sin GPS físico?
+
+La aplicación calcula la posición estimada del autobús en tiempo real mediante **interpolación geoespacial basada en tiempo transcurrido y velocidad promedio**:
+
+$$\text{progreso} = \frac{\text{tiempo transcurrido}}{\text{tiempo estimado del segmento}}$$
+$$\text{posición} = \text{parada}_A + \text{progreso} \times (\text{parada}_B - \text{parada}_A)$$
+
+- **Velocidad promedio**: 25 km/h (rango 15–35 km/h)
+- **Horas pico** (7:00–8:00 h y 13:00–15:00 h): La velocidad se ajusta automáticamente al 75% para reflejar mayor afluencia y tiempos de ascenso/descenso.
+- **Margen de error dinámico**: Muestra en pantalla el margen de variación esperado ($\pm N\text{ min}$).
+- **Frecuencia de salidas**: Cada 15 minutos de 6:00 a 21:00 h (modo automático o configurable manualmente).
+- **Actualización**: Cada 15 segundos.
+
+---
+
+## 📍 Paradas de la Ruta
+
+| # | Parada | Descripción | Latitud | Longitud |
+|---|---|---|---|---|
+| 1 | **GYM (Terminal)** | Gimnasio Campus Sur | 22.275853 | -97.859407 |
+| 2 | **Libros** | Frente al Gimnasio | 22.276427 | -97.859229 |
+| 3 | **Caseta** | Entrada / Caseta principal | 22.278889 | -97.861007 |
+| 4 | **Comida** | Área gastronómica | 22.278312 | -97.865283 |
+| 5 | **FIT** | Fac. de Ingeniería Tampico | 22.277021 | -97.865473 |
+| 6 | **FADYCS** | Fac. de Derecho y Ciencias Sociales | 22.275560 | -97.865483 |
+| 7 | **FADU** | Fac. de Arquitectura, Diseño y Urbanismo | 22.275011 | -97.864104 |
+| 8 | **FCAT** | Fac. de Comercio, Administración y Cs. Aplicadas | 22.274985 | -97.862748 |
+
+---
+
+## 🚀 Compilación desde código fuente
 
 ```powershell
-# Navegar al proyecto
-cd C:\Users\jmisa\.gemini\antigravity\scratch\bus_tracker_uat
+# Clonar el repositorio
+git clone https://github.com/thisfknmissa/-Proyectito-.git
+cd -Proyectito-
 
-# Instalar dependencias
+# Descargar dependencias
 flutter pub get
 
 # Ejecutar tests
 flutter test
 
-# Compilar APK de debug (más rápido)
-flutter build apk --debug
-
-# Compilar APK de release (para instalar en celular)
+# Compilar APK release
 flutter build apk --release
 ```
 
-El APK estará en:
-- Debug: `build\app\outputs\flutter-apk\app-debug.apk`
-- Release: `build\app\outputs\flutter-apk\app-release.apk`
-
-### Instalar en dispositivo Android
-
-```powershell
-# Con el celular conectado por USB (depuración USB activada)
-flutter install
-
-# O copia el APK al celular manualmente
-```
-
----
-
-## 📁 Estructura del proyecto
-
-```
-lib/
-├── main.dart                    # Punto de entrada
-├── models/
-│   ├── bus_stop.dart            # Modelo de parada
-│   ├── bus_route.dart           # Modelo de ruta (con horas pico)
-│   └── bus_estimation.dart      # Resultado de la estimación
-├── services/
-│   ├── route_service.dart       # Carga el JSON y calcula salidas
-│   └── bus_estimator.dart       # Algoritmo de interpolación geoespacial
-├── providers/
-│   └── bus_tracker_provider.dart # State management + auto-refresh
-└── screens/
-    ├── home_screen.dart         # Mapa principal
-    └── stops_screen.dart        # Lista de paradas con ETA
-assets/
-└── route.json                   # Datos de la ruta (editable)
-```
-
----
-
-## ✏️ Personalizar la ruta
-
-Edita `assets/route.json` para cambiar:
-- `average_speed_kmh`: velocidad promedio estimada
-- `departure_interval_minutes`: cada cuántos minutos sale el bus
-- `first_departure` / `last_departure`: horario de servicio
-- `peak_hours`: franjas donde el bus va más lento
-- `stops`: añadir/quitar paradas con coordenadas reales
+El APK compilado se genera en:
+`build/app/outputs/flutter-apk/app-release.apk`

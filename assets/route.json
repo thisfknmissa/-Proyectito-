@@ -1,7 +1,7 @@
-﻿{
+{
   "route_name": "Transporte Campus Sur UAT",
   "route_short": "Campus Sur",
-  "color": "#E65100",
+  "color": "#1E88E5",
   "average_speed_kmh": 25,
   "min_speed_kmh": 15,
   "max_speed_kmh": 35,
@@ -79,11 +79,30 @@
     {
       "id": "fcat",
       "name": "FCAT",
-      "description": "Facultad de Comercio, Administración y Ciencias Aplicadas Tampico",
+      "description": "Facultad de Comercio, Administración y Ciencias Aplicadas",
       "lat": 22.2749850134443,
       "lng": -97.86274795233082,
       "is_terminal": false,
       "icon": "fcat"
     }
+  ],
+  "waypoints": [
+    { "lat": 22.275853028486324, "lng": -97.85940668629185 },
+    { "lat": 22.276426514209717, "lng": -97.85922936740606 },
+    { "lat": 22.2771,            "lng": -97.8592 },
+    { "lat": 22.2785,            "lng": -97.8594 },
+    { "lat": 22.278889352203937, "lng": -97.86100667958786 },
+    { "lat": 22.2789,            "lng": -97.8625 },
+    { "lat": 22.2789,            "lng": -97.8640 },
+    { "lat": 22.278311838890346, "lng": -97.86528318714124 },
+    { "lat": 22.277020718164042, "lng": -97.86547252196516 },
+    { "lat": 22.275559712981224, "lng": -97.86548278289342 },
+    { "lat": 22.275010733293268, "lng": -97.86410361180192 },
+    { "lat": 22.2749850134443,   "lng": -97.86274795233082 },
+    { "lat": 22.2749,            "lng": -97.8621 },
+    { "lat": 22.2749,            "lng": -97.8612 },
+    { "lat": 22.2749,            "lng": -97.8601 },
+    { "lat": 22.2755,            "lng": -97.8594 },
+    { "lat": 22.275853028486324, "lng": -97.85940668629185 }
   ]
 }
