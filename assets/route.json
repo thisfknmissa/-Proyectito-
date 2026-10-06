@@ -1,145 +1,463 @@
-{
-  "route_name": "Transporte Campus Sur UAT",
-  "route_short": "Campus Sur",
-  "color": "#0288D1",
-  "average_speed_kmh": 15,
-  "min_speed_kmh": 5,
-  "max_speed_kmh": 25,
-  "departure_interval_minutes": 15,
-  "first_departure": "06:00",
-  "last_departure": "21:00",
-  "base_station": {
-    "name": "Base de Operaciones UAT",
-    "description": "Punto de salida y fin de jornada",
-    "lat": 22.277880658336834,
-    "lng": -97.86559585451916
-  },
-  "peak_hours": [
-    { "start": "07:00", "end": "08:00", "speed_factor": 0.75 },
-    { "start": "13:00", "end": "15:00", "speed_factor": 0.75 }
-  ],
-  "stops": [
-    {
-      "id": "base",
-      "name": "Base",
-      "description": "Base / Inicio y fin de jornada",
-      "lat": 22.277880658336834,
-      "lng": -97.86559585451916,
-      "is_terminal": true,
-      "icon": "place",
-      "dwell_minutes": 2.0
-    },
-    {
-      "id": "fadycs",
-      "name": "FADYCS",
-      "description": "Facultad de Derecho y Ciencias Sociales",
-      "lat": 22.27850,
-      "lng": -97.86555,
-      "is_terminal": false,
-      "icon": "fadycs",
-      "dwell_minutes": 2.0
-    },
-    {
-      "id": "fit",
-      "name": "FIT",
-      "description": "Facultad de Ingeniería Tampico",
-      "lat": 22.27895,
-      "lng": -97.86350,
-      "is_terminal": false,
-      "icon": "fit",
-      "dwell_minutes": 2.0
-    },
-    {
-      "id": "comida",
-      "name": "Comida",
-      "description": "Área de comida",
-      "lat": 22.27895,
-      "lng": -97.86000,
-      "is_terminal": false,
-      "icon": "food",
-      "dwell_minutes": 2.0
-    },
-    {
-      "id": "caseta",
-      "name": "Caseta",
-      "description": "Caseta principal (Espera: 5 a 10 min)",
-      "lat": 22.27637,
-      "lng": -97.85764,
-      "is_terminal": false,
-      "icon": "booth",
-      "dwell_minutes": 7.5
-    },
-    {
-      "id": "libros",
-      "name": "Libros",
-      "description": "Frente al GYM",
-      "lat": 22.27520,
-      "lng": -97.85930,
-      "is_terminal": false,
-      "icon": "books",
-      "dwell_minutes": 2.0
-    },
-    {
-      "id": "gym",
-      "name": "GYM",
-      "description": "Gimnasio Universitario Campus Sur",
-      "lat": 22.27490,
-      "lng": -97.86030,
-      "is_terminal": false,
-      "icon": "gym",
-      "dwell_minutes": 2.0
-    },
-    {
-      "id": "fcat",
-      "name": "FCAT",
-      "description": "Facultad de Comercio, Administración y Cs. Aplicadas",
-      "lat": 22.27500,
-      "lng": -97.86550,
-      "is_terminal": false,
-      "icon": "fcat",
-      "dwell_minutes": 2.0
-    },
-    {
-      "id": "fadu",
-      "name": "FADU",
-      "description": "Facultad de Arquitectura, Diseño y Urbanismo",
-      "lat": 22.27620,
-      "lng": -97.86555,
-      "is_terminal": false,
-      "icon": "fadu",
-      "dwell_minutes": 2.0
-    }
-  ],
-  "waypoints": [
-    { "lat": 22.277880658336834, "lng": -97.86559585451916 },
-    { "lat": 22.27850,            "lng": -97.86555 },
-    { "lat": 22.27892,            "lng": -97.86555 },
-    { "lat": 22.27895,            "lng": -97.86530 },
-    { "lat": 22.27895,            "lng": -97.86350 },
-    { "lat": 22.27895,            "lng": -97.86000 },
-    { "lat": 22.27885,            "lng": -97.85960 },
-    { "lat": 22.27850,            "lng": -97.85935 },
-    { "lat": 22.27780,            "lng": -97.85870 },
-    { "lat": 22.27718,            "lng": -97.85828 },
-    { "lat": 22.27637,            "lng": -97.85764 },
-    { "lat": 22.27637,            "lng": -97.85854 },
-    { "lat": 22.27637,            "lng": -97.85997 },
-    { "lat": 22.27637,            "lng": -97.86040 },
-    { "lat": 22.27570,            "lng": -97.86040 },
-    { "lat": 22.27555,            "lng": -97.85960 },
-    { "lat": 22.27520,            "lng": -97.85930 },
-    { "lat": 22.27450,            "lng": -97.85930 },
-    { "lat": 22.27435,            "lng": -97.85980 },
-    { "lat": 22.27440,            "lng": -97.86030 },
-    { "lat": 22.27490,            "lng": -97.86030 },
-    { "lat": 22.27520,            "lng": -97.86185 },
-    { "lat": 22.27570,            "lng": -97.86185 },
-    { "lat": 22.27650,            "lng": -97.86185 },
-    { "lat": 22.27650,            "lng": -97.86300 },
-    { "lat": 22.27650,            "lng": -97.86450 },
-    { "lat": 22.27560,            "lng": -97.86550 },
-    { "lat": 22.27500,            "lng": -97.86550 },
-    { "lat": 22.27620,            "lng": -97.86555 },
-    { "lat": 22.277880658336834, "lng": -97.86559585451916 }
-  ]
+﻿{
+    "route_name":  "Transporte Campus Sur UAT",
+    "route_short":  "Campus Sur",
+    "color":  "#0288D1",
+    "average_speed_kmh":  15,
+    "min_speed_kmh":  5,
+    "max_speed_kmh":  25,
+    "departure_interval_minutes":  15,
+    "first_departure":  "06:00",
+    "last_departure":  "21:00",
+    "base_station":  {
+                         "name":  "Base de Operaciones UAT",
+                         "description":  "Punto de salida y fin de jornada",
+                         "lat":  22.277880658336834,
+                         "lng":  -97.865595854519157
+                     },
+    "peak_hours":  [
+                       {
+                           "start":  "07:00",
+                           "end":  "08:00",
+                           "speed_factor":  0.75
+                       },
+                       {
+                           "start":  "13:00",
+                           "end":  "15:00",
+                           "speed_factor":  0.75
+                       }
+                   ],
+    "stops":  [
+                  {
+                      "lat":  22.277880658336834,
+                      "id":  "base",
+                      "name":  "Base",
+                      "description":  "Inicio y fin de jornada",
+                      "dwell_minutes":  2,
+                      "is_terminal":  true,
+                      "lng":  -97.865595854519157,
+                      "icon":  "place"
+                  },
+                  {
+                      "lat":  22.277020718164042,
+                      "id":  "fit",
+                      "name":  "FIT",
+                      "description":  "Facultad de IngenierÃ­a Tampico",
+                      "dwell_minutes":  2,
+                      "is_terminal":  false,
+                      "lng":  -97.86547252196516,
+                      "icon":  "fit"
+                  },
+                  {
+                      "lat":  22.275559712981224,
+                      "id":  "fadycs",
+                      "name":  "FADYCS",
+                      "description":  "Facultad de Derecho y Ciencias Sociales",
+                      "dwell_minutes":  2,
+                      "is_terminal":  false,
+                      "lng":  -97.865482782893423,
+                      "icon":  "fadycs"
+                  },
+                  {
+                      "lat":  22.275010733293268,
+                      "id":  "fadu",
+                      "name":  "FADU",
+                      "description":  "Facultad de Arquitectura, DiseÃ±o y Urbanismo",
+                      "dwell_minutes":  2,
+                      "is_terminal":  false,
+                      "lng":  -97.864103611801923,
+                      "icon":  "fadu"
+                  },
+                  {
+                      "lat":  22.2749850134443,
+                      "id":  "fcat",
+                      "name":  "FCAT",
+                      "description":  "Facultad de Comercio, AdministraciÃ³n y Cs. Aplicadas",
+                      "dwell_minutes":  2,
+                      "is_terminal":  false,
+                      "lng":  -97.862747952330821,
+                      "icon":  "fcat"
+                  },
+                  {
+                      "lat":  22.275853028486324,
+                      "id":  "gym",
+                      "name":  "GYM",
+                      "description":  "Gimnasio Universitario Campus Sur",
+                      "dwell_minutes":  2,
+                      "is_terminal":  false,
+                      "lng":  -97.859406686291848,
+                      "icon":  "gym"
+                  },
+                  {
+                      "lat":  22.276426514209717,
+                      "id":  "libros",
+                      "name":  "Libros",
+                      "description":  "Frente al GYM",
+                      "dwell_minutes":  2,
+                      "is_terminal":  false,
+                      "lng":  -97.859229367406058,
+                      "icon":  "books"
+                  },
+                  {
+                      "lat":  22.278889352203937,
+                      "id":  "caseta",
+                      "name":  "Caseta",
+                      "description":  "Caseta principal (Espera: 5 a 10 min)",
+                      "dwell_minutes":  7.5,
+                      "is_terminal":  false,
+                      "lng":  -97.861006679587859,
+                      "icon":  "booth"
+                  },
+                  {
+                      "lat":  22.278311838890346,
+                      "id":  "comida",
+                      "name":  "Comida",
+                      "description":  "Ãrea de comida",
+                      "dwell_minutes":  2,
+                      "is_terminal":  false,
+                      "lng":  -97.865283187141245,
+                      "icon":  "food"
+                  }
+              ],
+    "waypoints":  [
+                      {
+                          "lat":  22.277880658336834,
+                          "lng":  -97.865595854519157
+                      },
+                      {
+                          "lat":  22.277178,
+                          "lng":  -97.865386
+                      },
+                      {
+                          "lat":  22.277168,
+                          "lng":  -97.865556
+                      },
+                      {
+                          "lat":  22.277022,
+                          "lng":  -97.865559
+                      },
+                      {
+                          "lat":  22.276775,
+                          "lng":  -97.865563
+                      },
+                      {
+                          "lat":  22.27678,
+                          "lng":  -97.865785
+                      },
+                      {
+                          "lat":  22.277176,
+                          "lng":  -97.865779
+                      },
+                      {
+                          "lat":  22.277168,
+                          "lng":  -97.865556
+                      },
+                      {
+                          "lat":  22.277178,
+                          "lng":  -97.865386
+                      },
+                      {
+                          "lat":  22.277163,
+                          "lng":  -97.865385
+                      },
+                      {
+                          "lat":  22.276812,
+                          "lng":  -97.865383
+                      },
+                      {
+                          "lat":  22.276615,
+                          "lng":  -97.865382
+                      },
+                      {
+                          "lat":  22.276535,
+                          "lng":  -97.865381
+                      },
+                      {
+                          "lat":  22.276047,
+                          "lng":  -97.865378
+                      },
+                      {
+                          "lat":  22.276003,
+                          "lng":  -97.865378
+                      },
+                      {
+                          "lat":  22.275748,
+                          "lng":  -97.865377
+                      },
+                      {
+                          "lat":  22.27556,
+                          "lng":  -97.865376
+                      },
+                      {
+                          "lat":  22.275554,
+                          "lng":  -97.865376
+                      },
+                      {
+                          "lat":  22.275232,
+                          "lng":  -97.865374
+                      },
+                      {
+                          "lat":  22.275143,
+                          "lng":  -97.865331
+                      },
+                      {
+                          "lat":  22.275043,
+                          "lng":  -97.865203
+                      },
+                      {
+                          "lat":  22.275044,
+                          "lng":  -97.865176
+                      },
+                      {
+                          "lat":  22.275046,
+                          "lng":  -97.864997
+                      },
+                      {
+                          "lat":  22.275048,
+                          "lng":  -97.864775
+                      },
+                      {
+                          "lat":  22.275054,
+                          "lng":  -97.864273
+                      },
+                      {
+                          "lat":  22.275055,
+                          "lng":  -97.864218
+                      },
+                      {
+                          "lat":  22.275055,
+                          "lng":  -97.864164
+                      },
+                      {
+                          "lat":  22.275056,
+                          "lng":  -97.864105
+                      },
+                      {
+                          "lat":  22.275058,
+                          "lng":  -97.863964
+                      },
+                      {
+                          "lat":  22.27506,
+                          "lng":  -97.863787
+                      },
+                      {
+                          "lat":  22.275063,
+                          "lng":  -97.86356
+                      },
+                      {
+                          "lat":  22.275066,
+                          "lng":  -97.863294
+                      },
+                      {
+                          "lat":  22.275067,
+                          "lng":  -97.863182
+                      },
+                      {
+                          "lat":  22.275068,
+                          "lng":  -97.863142
+                      },
+                      {
+                          "lat":  22.275073,
+                          "lng":  -97.862988
+                      },
+                      {
+                          "lat":  22.275085,
+                          "lng":  -97.862754
+                      },
+                      {
+                          "lat":  22.275086,
+                          "lng":  -97.862728
+                      },
+                      {
+                          "lat":  22.27515,
+                          "lng":  -97.862615
+                      },
+                      {
+                          "lat":  22.275268,
+                          "lng":  -97.862553
+                      },
+                      {
+                          "lat":  22.275567,
+                          "lng":  -97.862559
+                      },
+                      {
+                          "lat":  22.27568,
+                          "lng":  -97.862561
+                      },
+                      {
+                          "lat":  22.275898,
+                          "lng":  -97.862562
+                      },
+                      {
+                          "lat":  22.275905,
+                          "lng":  -97.861964
+                      },
+                      {
+                          "lat":  22.275906,
+                          "lng":  -97.861855
+                      },
+                      {
+                          "lat":  22.275907,
+                          "lng":  -97.861758
+                      },
+                      {
+                          "lat":  22.275908,
+                          "lng":  -97.861709
+                      },
+                      {
+                          "lat":  22.275917,
+                          "lng":  -97.860961
+                      },
+                      {
+                          "lat":  22.275921,
+                          "lng":  -97.860562
+                      },
+                      {
+                          "lat":  22.275925,
+                          "lng":  -97.860242
+                      },
+                      {
+                          "lat":  22.275928,
+                          "lng":  -97.859407
+                      },
+                      {
+                          "lat":  22.275928,
+                          "lng":  -97.859407
+                      },
+                      {
+                          "lat":  22.275928,
+                          "lng":  -97.859305
+                      },
+                      {
+                          "lat":  22.275929,
+                          "lng":  -97.859215
+                      },
+                      {
+                          "lat":  22.276376,
+                          "lng":  -97.859216
+                      },
+                      {
+                          "lat":  22.276376,
+                          "lng":  -97.859229
+                      },
+                      {
+                          "lat":  22.276374,
+                          "lng":  -97.859971
+                      },
+                      {
+                          "lat":  22.276373,
+                          "lng":  -97.860568
+                      },
+                      {
+                          "lat":  22.276589,
+                          "lng":  -97.860575
+                      },
+                      {
+                          "lat":  22.27665,
+                          "lng":  -97.860614
+                      },
+                      {
+                          "lat":  22.276683,
+                          "lng":  -97.860685
+                      },
+                      {
+                          "lat":  22.276675,
+                          "lng":  -97.861056
+                      },
+                      {
+                          "lat":  22.277784,
+                          "lng":  -97.86106
+                      },
+                      {
+                          "lat":  22.277965,
+                          "lng":  -97.861061
+                      },
+                      {
+                          "lat":  22.278013,
+                          "lng":  -97.861061
+                      },
+                      {
+                          "lat":  22.278356,
+                          "lng":  -97.861062
+                      },
+                      {
+                          "lat":  22.278744,
+                          "lng":  -97.861064
+                      },
+                      {
+                          "lat":  22.278773,
+                          "lng":  -97.861064
+                      },
+                      {
+                          "lat":  22.278846,
+                          "lng":  -97.861064
+                      },
+                      {
+                          "lat":  22.278878,
+                          "lng":  -97.86107
+                      },
+                      {
+                          "lat":  22.279005,
+                          "lng":  -97.861096
+                      },
+                      {
+                          "lat":  22.279211,
+                          "lng":  -97.861159
+                      },
+                      {
+                          "lat":  22.279161,
+                          "lng":  -97.861326
+                      },
+                      {
+                          "lat":  22.279158,
+                          "lng":  -97.861339
+                      },
+                      {
+                          "lat":  22.279089,
+                          "lng":  -97.861652
+                      },
+                      {
+                          "lat":  22.278929,
+                          "lng":  -97.862381
+                      },
+                      {
+                          "lat":  22.278893,
+                          "lng":  -97.86254
+                      },
+                      {
+                          "lat":  22.278876,
+                          "lng":  -97.862619
+                      },
+                      {
+                          "lat":  22.278492,
+                          "lng":  -97.864357
+                      },
+                      {
+                          "lat":  22.278316,
+                          "lng":  -97.865153
+                      },
+                      {
+                          "lat":  22.278282,
+                          "lng":  -97.86525
+                      },
+                      {
+                          "lat":  22.278276,
+                          "lng":  -97.86526
+                      },
+                      {
+                          "lat":  22.278233,
+                          "lng":  -97.865338
+                      },
+                      {
+                          "lat":  22.278148,
+                          "lng":  -97.865376
+                      },
+                      {
+                          "lat":  22.278089,
+                          "lng":  -97.86539
+                      },
+                      {
+                          "lat":  22.277880658336834,
+                          "lng":  -97.865595854519157
+                      }
+                  ]
 }

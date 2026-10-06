@@ -32,3 +32,4 @@ flutter:
 
   assets:
     - assets/route.json
+    - assets/tiles/

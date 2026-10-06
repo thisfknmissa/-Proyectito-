@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/bus_tracker_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,7 +81,7 @@ class BusTrackerApp extends StatelessWidget {
           ),
           fontFamily: 'Roboto',
         ),
-        home: const HomeScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

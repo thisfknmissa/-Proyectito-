@@ -8,6 +8,7 @@ import '../main.dart';
 import '../providers/bus_tracker_provider.dart';
 import '../models/bus_stop.dart';
 import '../models/bus_route.dart';
+import '../services/campus_tile_provider.dart';
 import 'stops_screen.dart';
 
 enum MapTileType {
@@ -117,11 +118,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   // Capa de mosaicos sin necesidad de API key
                   if (_currentTileType == MapTileType.streets)
                     TileLayer(
+                      tileProvider: CampusOfflineTileProvider(),
                       urlTemplate:
                           'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.uat.bus_tracker_uat',
-                      maxZoom: 19,
-                      maxNativeZoom: 19,
+                      maxZoom: 18.5,
+                      maxNativeZoom: 18,
                     )
                   else
                     TileLayer(
