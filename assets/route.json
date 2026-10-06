@@ -1,108 +1,145 @@
 {
   "route_name": "Transporte Campus Sur UAT",
   "route_short": "Campus Sur",
-  "color": "#1E88E5",
-  "average_speed_kmh": 25,
-  "min_speed_kmh": 15,
-  "max_speed_kmh": 35,
+  "color": "#0288D1",
+  "average_speed_kmh": 15,
+  "min_speed_kmh": 5,
+  "max_speed_kmh": 25,
   "departure_interval_minutes": 15,
   "first_departure": "06:00",
   "last_departure": "21:00",
+  "base_station": {
+    "name": "Base de Operaciones UAT",
+    "description": "Punto de salida y fin de jornada",
+    "lat": 22.277880658336834,
+    "lng": -97.86559585451916
+  },
   "peak_hours": [
     { "start": "07:00", "end": "08:00", "speed_factor": 0.75 },
     { "start": "13:00", "end": "15:00", "speed_factor": 0.75 }
   ],
   "stops": [
     {
-      "id": "gym",
-      "name": "GYM",
-      "description": "Gimnasio Campus Sur",
-      "lat": 22.275853028486324,
-      "lng": -97.85940668629185,
+      "id": "base",
+      "name": "Base",
+      "description": "Base / Inicio y fin de jornada",
+      "lat": 22.277880658336834,
+      "lng": -97.86559585451916,
       "is_terminal": true,
-      "icon": "gym"
-    },
-    {
-      "id": "libros",
-      "name": "Libros",
-      "description": "Frente al GYM",
-      "lat": 22.276426514209717,
-      "lng": -97.85922936740606,
-      "is_terminal": false,
-      "icon": "books"
-    },
-    {
-      "id": "caseta",
-      "name": "Caseta",
-      "description": "Cerca de la caseta",
-      "lat": 22.278889352203937,
-      "lng": -97.86100667958786,
-      "is_terminal": false,
-      "icon": "booth"
-    },
-    {
-      "id": "comida",
-      "name": "Comida",
-      "description": "Área de comida",
-      "lat": 22.278311838890346,
-      "lng": -97.86528318714124,
-      "is_terminal": false,
-      "icon": "food"
-    },
-    {
-      "id": "fit",
-      "name": "FIT",
-      "description": "Facultad de Ingeniería Tampico",
-      "lat": 22.277020718164042,
-      "lng": -97.86547252196516,
-      "is_terminal": false,
-      "icon": "fit"
+      "icon": "place",
+      "dwell_minutes": 2.0
     },
     {
       "id": "fadycs",
       "name": "FADYCS",
       "description": "Facultad de Derecho y Ciencias Sociales",
-      "lat": 22.275559712981224,
-      "lng": -97.86548278289342,
+      "lat": 22.27850,
+      "lng": -97.86555,
       "is_terminal": false,
-      "icon": "fadycs"
+      "icon": "fadycs",
+      "dwell_minutes": 2.0
+    },
+    {
+      "id": "fit",
+      "name": "FIT",
+      "description": "Facultad de Ingeniería Tampico",
+      "lat": 22.27895,
+      "lng": -97.86350,
+      "is_terminal": false,
+      "icon": "fit",
+      "dwell_minutes": 2.0
+    },
+    {
+      "id": "comida",
+      "name": "Comida",
+      "description": "Área de comida",
+      "lat": 22.27895,
+      "lng": -97.86000,
+      "is_terminal": false,
+      "icon": "food",
+      "dwell_minutes": 2.0
+    },
+    {
+      "id": "caseta",
+      "name": "Caseta",
+      "description": "Caseta principal (Espera: 5 a 10 min)",
+      "lat": 22.27637,
+      "lng": -97.85764,
+      "is_terminal": false,
+      "icon": "booth",
+      "dwell_minutes": 7.5
+    },
+    {
+      "id": "libros",
+      "name": "Libros",
+      "description": "Frente al GYM",
+      "lat": 22.27520,
+      "lng": -97.85930,
+      "is_terminal": false,
+      "icon": "books",
+      "dwell_minutes": 2.0
+    },
+    {
+      "id": "gym",
+      "name": "GYM",
+      "description": "Gimnasio Universitario Campus Sur",
+      "lat": 22.27490,
+      "lng": -97.86030,
+      "is_terminal": false,
+      "icon": "gym",
+      "dwell_minutes": 2.0
+    },
+    {
+      "id": "fcat",
+      "name": "FCAT",
+      "description": "Facultad de Comercio, Administración y Cs. Aplicadas",
+      "lat": 22.27500,
+      "lng": -97.86550,
+      "is_terminal": false,
+      "icon": "fcat",
+      "dwell_minutes": 2.0
     },
     {
       "id": "fadu",
       "name": "FADU",
       "description": "Facultad de Arquitectura, Diseño y Urbanismo",
-      "lat": 22.275010733293268,
-      "lng": -97.86410361180192,
+      "lat": 22.27620,
+      "lng": -97.86555,
       "is_terminal": false,
-      "icon": "fadu"
-    },
-    {
-      "id": "fcat",
-      "name": "FCAT",
-      "description": "Facultad de Comercio, Administración y Ciencias Aplicadas",
-      "lat": 22.2749850134443,
-      "lng": -97.86274795233082,
-      "is_terminal": false,
-      "icon": "fcat"
+      "icon": "fadu",
+      "dwell_minutes": 2.0
     }
   ],
   "waypoints": [
-    { "lat": 22.275853028486324, "lng": -97.85940668629185 },
-    { "lat": 22.276426514209717, "lng": -97.85922936740606 },
-    { "lat": 22.2771,            "lng": -97.8592 },
-    { "lat": 22.2785,            "lng": -97.8594 },
-    { "lat": 22.278889352203937, "lng": -97.86100667958786 },
-    { "lat": 22.2789,            "lng": -97.8625 },
-    { "lat": 22.2789,            "lng": -97.8640 },
-    { "lat": 22.278311838890346, "lng": -97.86528318714124 },
-    { "lat": 22.277020718164042, "lng": -97.86547252196516 },
-    { "lat": 22.275559712981224, "lng": -97.86548278289342 },
-    { "lat": 22.275010733293268, "lng": -97.86410361180192 },
-    { "lat": 22.2749850134443,   "lng": -97.86274795233082 },
-    { "lat": 22.2749,            "lng": -97.8621 },
-    { "lat": 22.2749,            "lng": -97.8612 },
-    { "lat": 22.2749,            "lng": -97.8601 },
-    { "lat": 22.2755,            "lng": -97.8594 },
-    { "lat": 22.275853028486324, "lng": -97.85940668629185 }
+    { "lat": 22.277880658336834, "lng": -97.86559585451916 },
+    { "lat": 22.27850,            "lng": -97.86555 },
+    { "lat": 22.27892,            "lng": -97.86555 },
+    { "lat": 22.27895,            "lng": -97.86530 },
+    { "lat": 22.27895,            "lng": -97.86350 },
+    { "lat": 22.27895,            "lng": -97.86000 },
+    { "lat": 22.27885,            "lng": -97.85960 },
+    { "lat": 22.27850,            "lng": -97.85935 },
+    { "lat": 22.27780,            "lng": -97.85870 },
+    { "lat": 22.27718,            "lng": -97.85828 },
+    { "lat": 22.27637,            "lng": -97.85764 },
+    { "lat": 22.27637,            "lng": -97.85854 },
+    { "lat": 22.27637,            "lng": -97.85997 },
+    { "lat": 22.27637,            "lng": -97.86040 },
+    { "lat": 22.27570,            "lng": -97.86040 },
+    { "lat": 22.27555,            "lng": -97.85960 },
+    { "lat": 22.27520,            "lng": -97.85930 },
+    { "lat": 22.27450,            "lng": -97.85930 },
+    { "lat": 22.27435,            "lng": -97.85980 },
+    { "lat": 22.27440,            "lng": -97.86030 },
+    { "lat": 22.27490,            "lng": -97.86030 },
+    { "lat": 22.27520,            "lng": -97.86185 },
+    { "lat": 22.27570,            "lng": -97.86185 },
+    { "lat": 22.27650,            "lng": -97.86185 },
+    { "lat": 22.27650,            "lng": -97.86300 },
+    { "lat": 22.27650,            "lng": -97.86450 },
+    { "lat": 22.27560,            "lng": -97.86550 },
+    { "lat": 22.27500,            "lng": -97.86550 },
+    { "lat": 22.27620,            "lng": -97.86555 },
+    { "lat": 22.277880658336834, "lng": -97.86559585451916 }
   ]
 }

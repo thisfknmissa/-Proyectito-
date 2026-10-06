@@ -50,8 +50,8 @@ class BusTrackerProvider extends ChangeNotifier {
       await _loadPreferences();
       _refresh();
 
-      // Refresh every 15 seconds
-      _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      // Refresh every 1 second for true real-time map tracking
+      _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) {
         _refresh();
       });
     } catch (e) {

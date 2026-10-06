@@ -6,7 +6,7 @@ class PeakHour {
   final int startMinute;
   final int endHour;
   final int endMinute;
-  final double speedFactor; // < 1.0 means slower
+  final double speedFactor;
 
   const PeakHour({
     required this.startHour,
@@ -48,6 +48,7 @@ class BusRoute {
   final int firstDepartureMinute;
   final int lastDepartureHour;
   final int lastDepartureMinute;
+  final LatLng basePosition;
   final List<BusStop> stops;
   final List<PeakHour> peakHours;
   final List<LatLng> waypoints;
@@ -64,6 +65,7 @@ class BusRoute {
     required this.firstDepartureMinute,
     required this.lastDepartureHour,
     required this.lastDepartureMinute,
+    required this.basePosition,
     required this.stops,
     required this.peakHours,
     this.waypoints = const [],
@@ -72,6 +74,15 @@ class BusRoute {
   factory BusRoute.fromJson(Map<String, dynamic> json) {
     final firstParts = (json['first_departure'] as String).split(':');
     final lastParts = (json['last_departure'] as String).split(':');
+
+    LatLng basePos = const LatLng(22.277880658336834, -97.86559585451916);
+    if (json['base_station'] != null) {
+      final baseMap = json['base_station'] as Map<String, dynamic>;
+      basePos = LatLng(
+        (baseMap['lat'] as num).toDouble(),
+        (baseMap['lng'] as num).toDouble(),
+      );
+    }
 
     return BusRoute(
       routeName: json['route_name'] as String,
@@ -85,6 +96,7 @@ class BusRoute {
       firstDepartureMinute: int.parse(firstParts[1]),
       lastDepartureHour: int.parse(lastParts[0]),
       lastDepartureMinute: int.parse(lastParts[1]),
+      basePosition: basePos,
       stops: (json['stops'] as List<dynamic>)
           .map((s) => BusStop.fromJson(s as Map<String, dynamic>))
           .toList(),
@@ -102,7 +114,6 @@ class BusRoute {
     );
   }
 
-  /// Effective speed considering peak hours
   double effectiveSpeedKmh(DateTime at) {
     for (final peak in peakHours) {
       if (peak.isActive(at)) {

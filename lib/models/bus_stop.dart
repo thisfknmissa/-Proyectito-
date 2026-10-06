@@ -7,6 +7,7 @@ class BusStop {
   final LatLng position;
   final bool isTerminal;
   final String icon;
+  final double dwellMinutes;
 
   const BusStop({
     required this.id,
@@ -15,6 +16,7 @@ class BusStop {
     required this.position,
     required this.isTerminal,
     required this.icon,
+    this.dwellMinutes = 2.0,
   });
 
   factory BusStop.fromJson(Map<String, dynamic> json) {
@@ -26,8 +28,9 @@ class BusStop {
         (json['lat'] as num).toDouble(),
         (json['lng'] as num).toDouble(),
       ),
-      isTerminal: json['is_terminal'] as bool,
-      icon: json['icon'] as String,
+      isTerminal: json['is_terminal'] as bool? ?? false,
+      icon: json['icon'] as String? ?? 'place',
+      dwellMinutes: (json['dwell_minutes'] as num?)?.toDouble() ?? 2.0,
     );
   }
 }

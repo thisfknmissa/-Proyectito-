@@ -28,15 +28,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   MapTileType _currentTileType = MapTileType.streets;
 
   // ── Coordenadas del campus ────────────────────────────────────────────────
-  static const LatLng _campusCenter = LatLng(22.2768, -97.8624);
-  static const double _defaultZoom = 16.3;
-  static const double _minZoom = 14.8;
+  static const LatLng _campusCenter = LatLng(22.2766, -97.8616);
+  static const double _defaultZoom = 16.4;
+  static const double _minZoom = 15.0;
   static const double _maxZoom = 18.5;
 
-  // Bounding box del campus — permite navegar con soltura alrededor de la universidad
+  // Bounding box del campus ajustado exactamente a la nueva ruta
   static final LatLngBounds _campusBounds = LatLngBounds(
-    const LatLng(22.2710, -97.8700), // SW
-    const LatLng(22.2840, -97.8550), // NE
+    const LatLng(22.2730, -97.8675), // SW
+    const LatLng(22.2805, -97.8560), // NE
   );
 
   @override
@@ -82,15 +82,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           final estimation = tracker.estimation;
 
           // Auto-seguir el bus si está activo
-          if (_followBus && estimation != null) {
+          if (_followBus && estimation != null && !estimation.notYetDeparted) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               try {
-                _mapController.move(estimation.position, _defaultZoom);
+                _mapController.move(estimation.position, _mapController.camera.zoom);
               } catch (_) {}
             });
           }
 
-          // Waypoints para línea de ruta que sigue las calles del campus
+          // Polilínea con los 30 waypoints exactos de la ruta
           final List<LatLng> routePolyline = _buildRoutePolyline(route);
 
           return Stack(
@@ -132,26 +132,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       maxNativeZoom: 19,
                     ),
 
-                  // Resplandor exterior de la ruta
+                  // Resplandor exterior de la ruta (glow azul)
                   PolylineLayer(
                     polylines: [
                       Polyline(
                         points: routePolyline,
                         color: const Color(0xFF0288D1).withOpacity(0.35),
-                        strokeWidth: 14.0,
+                        strokeWidth: 15.0,
                         strokeCap: StrokeCap.round,
                         strokeJoin: StrokeJoin.round,
                       ),
                     ],
                   ),
 
-                  // Borde exterior contrastante
+                  // Borde exterior contrastante blanco
                   PolylineLayer(
                     polylines: [
                       Polyline(
                         points: routePolyline,
                         color: Colors.white.withOpacity(0.9),
-                        strokeWidth: 6.5,
+                        strokeWidth: 7.0,
                         strokeCap: StrokeCap.round,
                         strokeJoin: StrokeJoin.round,
                       ),
@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Polyline(
                         points: routePolyline,
                         color: const Color(0xFF0288D1),
-                        strokeWidth: 4.5,
+                        strokeWidth: 5.0,
                         strokeCap: StrokeCap.round,
                         strokeJoin: StrokeJoin.round,
                       ),
@@ -175,8 +175,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   MarkerLayer(
                     markers: [
                       ...route.stops.map((stop) => _buildStopMarker(stop)),
-                      if (estimation != null && !estimation.notYetDeparted)
-                        _buildBusMarker(estimation.position),
+                      if (estimation != null)
+                        _buildBusMarker(
+                          estimation.position,
+                          estimation.isStoppedAtStop,
+                        ),
                     ],
                   ),
                 ],
@@ -235,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      'Campus Sur · UAT (Tampico)',
+                                      'Campus Sur · UAT (5-25 km/h)',
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: AppColors.textSecondary,
@@ -263,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // ── BOTONES FLOTANTES (derecha) ────────────────────────────────
               Positioned(
                 right: 12,
-                bottom: 195,
+                bottom: 205,
                 child: Column(
                   children: [
                     // Cambiar tipo de mapa (Calles / Satélite)
@@ -340,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // ── Construir polyline con waypoints del JSON ─────────────────────────────
+  // ── Construir polilínea con waypoints del JSON ─────────────────────────────
   List<LatLng> _buildRoutePolyline(BusRoute route) {
     if (route.waypoints.isNotEmpty) {
       return route.waypoints;
@@ -349,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ..add(route.stops.first.position);
   }
 
-  // ── TARJETA DE ESTADO ─────────────────────────────────────────────────────
+  // ── TARJETA DE ESTADO CON SOPORTE EN TIEMPO REAL ──────────────────────────
   Widget _buildStatusCard(BusTrackerProvider tracker) {
     final estimation = tracker.estimation;
     final route = tracker.route;
@@ -368,32 +371,52 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     } else if (departure == null) {
       title = 'Fuera de horario';
       final next = _nextDepartureStr(route);
-      subtitle = next.isNotEmpty ? 'Próxima salida: $next' : '';
+      subtitle = next.isNotEmpty
+          ? 'Próxima salida a las $next desde Base'
+          : 'Servicio concluido por hoy';
       accentColor = AppColors.textMuted;
-      statusIcon = Icons.schedule_rounded;
+      statusIcon = Icons.nightlife_rounded;
     } else if (estimation == null) {
-      title = 'Calculando posición...';
+      title = 'Calculando posición en tiempo real...';
       subtitle = '';
       accentColor = AppColors.routeBlue;
       statusIcon = Icons.sync_rounded;
     } else if (estimation.notYetDeparted) {
-      title = 'El bus no ha salido aún';
-      subtitle = 'Terminal: ${route.stops.first.name}';
+      title = 'En Base · Listo para salir';
+      subtitle = 'Salida de jornada programada';
       accentColor = AppColors.warning;
-      statusIcon = Icons.departure_board_rounded;
+      statusIcon = Icons.garage_rounded;
     } else if (estimation.hasCompleted) {
-      title = 'Ruta completada';
-      subtitle = estimation.statusMessage;
+      title = 'Recorrido completado';
+      subtitle = 'En Base UAT · Esperando siguiente salida';
       accentColor = AppColors.success;
       statusIcon = Icons.check_circle_outline_rounded;
+    } else if (estimation.isStoppedAtStop) {
+      // ── AUTOBÚS DETENIDO EN PARADA (ESPERA PROGRAMADA) ───────────────────
+      final stopName = estimation.currentDwellStop?.name ?? 'Parada';
+      final sec = estimation.stoppedRemainingSeconds;
+      final m = sec ~/ 60;
+      final s = sec % 60;
+      final timeStr = m > 0 ? '${m}m ${s}s' : '${s}s';
+      final isCaseta = estimation.currentDwellStop?.id == 'caseta';
+
+      title = 'Detenido en $stopName';
+      subtitle = isCaseta
+          ? 'Espera en Caseta (5-10 min) · Restan $timeStr'
+          : 'Espera en parada (~2 min) · Restan $timeStr';
+      accentColor = AppColors.uatOrange;
+      statusIcon = Icons.pause_circle_filled_rounded;
     } else {
+      // ── AUTOBÚS EN MOVIMIENTO ─────────────────────────────────────────────
       title = estimation.statusMessage;
-      final mins = estimation.minutesToNextStop.round();
-      final margin = estimation.errorMarginMinutes.round();
-      subtitle = mins <= 0
-          ? 'Llegando ahora'
-          : '~$mins min  ±$margin min de margen';
-      accentColor = AppColors.routeBlue;
+      final remSec = (estimation.minutesToNextStop * 60).round();
+      final m = remSec ~/ 60;
+      final s = remSec % 60;
+      final timeStr = m > 0 ? '${m}m ${s}s' : '${s}s';
+      final speed = estimation.currentSpeedKmh.round();
+
+      subtitle = 'Llegada en ~$timeStr · Vel: ~$speed km/h (rango 5-25 km/h)';
+      accentColor = const Color(0xFF0288D1);
       statusIcon = Icons.directions_bus_filled_rounded;
     }
 
@@ -403,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         color: AppColors.card,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: accentColor.withOpacity(0.3),
+          color: accentColor.withOpacity(0.35),
           width: 1,
         ),
         boxShadow: [
@@ -441,7 +464,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         color: accentColor.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: accentColor.withOpacity(0.3),
+                          color: accentColor.withOpacity(0.35),
                           width: 1,
                         ),
                       ),
@@ -457,7 +480,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             title,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 15,
+                              fontSize: 14.5,
                               color: AppColors.textPrimary,
                             ),
                           ),
@@ -467,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               subtitle,
                               style: const TextStyle(
                                 color: AppColors.textSecondary,
-                                fontSize: 13,
+                                fontSize: 12,
                               ),
                             ),
                           ],
@@ -478,26 +501,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ],
                 ),
                 const SizedBox(height: 10),
-                // Indicador de actualización
+                // Indicador de tiempo real (parpadeo en verde)
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.success.withOpacity(0.25),
+                      width: 1,
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.refresh_rounded,
-                          size: 11,
-                          color: AppColors.textMuted),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Se actualiza cada 15 seg',
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: const BoxDecoration(
+                          color: AppColors.success,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      const Text(
+                        'EN VIVO · Actualización continua cada 1s',
                         style: TextStyle(
                           fontSize: 10,
-                          color: AppColors.textMuted,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success,
                         ),
                       ),
                     ],
@@ -556,8 +589,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   // ── MARCADOR DE PARADA (Estilo Escudo + Nombre Elegante) ──────────────────
   Marker _buildStopMarker(BusStop stop) {
-    final isTerminal = stop.isTerminal;
-    const badgeColor = AppColors.uatOrange;
+    final isBase = stop.id == 'base';
+    final isCaseta = stop.id == 'caseta';
+    final badgeColor = isBase
+        ? const Color(0xFF1565C0)
+        : (isCaseta ? const Color(0xFFD84315) : AppColors.uatOrange);
     const badgeWidth = 44.0;
     const badgeHeight = 44.0;
 
@@ -579,8 +615,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 color: badgeColor,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isTerminal ? Colors.amberAccent : Colors.white,
-                  width: isTerminal ? 2.5 : 1.8,
+                  color: isBase
+                      ? Colors.lightBlueAccent
+                      : (isCaseta ? Colors.amberAccent : Colors.white),
+                  width: (isBase || isCaseta) ? 2.2 : 1.8,
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -606,10 +644,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.75),
+                color: Colors.black.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withOpacity(0.35),
                   width: 0.5,
                 ),
               ),
@@ -630,8 +668,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // ── MARCADOR DEL BUS ──────────────────────────────────────────────────────
-  Marker _buildBusMarker(LatLng position) {
+  // ── MARCADOR DEL BUS EN TIEMPO REAL ───────────────────────────────────────
+  Marker _buildBusMarker(LatLng position, bool isStopped) {
+    final color = isStopped ? AppColors.uatOrange : const Color(0xFF0288D1);
     return Marker(
       point: position,
       width: 58,
@@ -645,7 +684,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             height: 58,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF0288D1).withOpacity(0.3),
+              color: color.withOpacity(0.35),
             ),
           ),
           // Círculo principal
@@ -653,19 +692,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFF0288D1),
+              color: color,
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 2.5),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0288D1).withOpacity(0.6),
+                  color: color.withOpacity(0.6),
                   blurRadius: 14,
                   spreadRadius: 2,
                 ),
               ],
             ),
-            child: const Icon(
-              Icons.directions_bus_filled_rounded,
+            child: Icon(
+              isStopped
+                  ? Icons.pause_circle_filled_rounded
+                  : Icons.directions_bus_filled_rounded,
               color: Colors.white,
               size: 24,
             ),
@@ -747,24 +788,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      if (stop.isTerminal)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.uatOrange.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Text(
-                            'Terminal Principal',
-                            style: TextStyle(
-                              color: AppColors.uatOrange,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.uatOrange.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          stop.id == 'caseta'
+                              ? 'Espera: 5 - 10 min'
+                              : 'Espera: ~2 min',
+                          style: const TextStyle(
+                            color: AppColors.uatOrange,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
+                      ),
                     ],
                   ),
                 ),
@@ -945,7 +987,7 @@ class _DepartureDialogState extends State<_DepartureDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            '¿Cuándo salió el autobús de la terminal (GYM)?',
+            '¿Cuándo salió el autobús de la Base?',
             style: TextStyle(
                 fontSize: 13, color: AppColors.textSecondary),
           ),

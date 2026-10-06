@@ -292,6 +292,22 @@ class StopsScreen extends StatelessWidget {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 3),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: (stop.id == 'caseta' ? AppColors.uatOrange : AppColors.routeBlue).withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            stop.id == 'caseta' ? '⏱️ Espera: 5-10 min' : '⏱️ Espera: ~2 min',
+                            style: TextStyle(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w600,
+                              color: stop.id == 'caseta' ? AppColors.uatOrange : AppColors.routeBlue,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

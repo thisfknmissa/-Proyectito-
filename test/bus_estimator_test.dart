@@ -86,6 +86,7 @@ BusRoute _buildTestRoute() {
     firstDepartureMinute: 0,
     lastDepartureHour: 21,
     lastDepartureMinute: 0,
+    basePosition: const LatLng(22.277880658336834, -97.86559585451916),
     stops: stops,
     peakHours: [],
   );
@@ -104,7 +105,7 @@ void main() {
         now: now,
       );
       expect(result.notYetDeparted, isTrue);
-      expect(result.position, equals(route.stops.first.position));
+      expect(result.position, equals(route.basePosition));
     });
 
     test('returns first segment position just after departure', () {
