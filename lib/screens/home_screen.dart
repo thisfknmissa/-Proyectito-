@@ -120,10 +120,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     TileLayer(
                       tileProvider: CampusOfflineTileProvider(),
                       urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
                       userAgentPackageName: 'com.uat.bus_tracker_uat',
-                      maxZoom: 18.5,
-                      maxNativeZoom: 18,
+                      maxZoom: 19,
+                      maxNativeZoom: 19,
                     )
                   else
                     TileLayer(

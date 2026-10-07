@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:bus_tracker_uat/main.dart';
 import 'package:bus_tracker_uat/providers/bus_tracker_provider.dart';
 import 'package:bus_tracker_uat/screens/splash_screen.dart';
 import 'package:bus_tracker_uat/services/campus_tile_provider.dart';
@@ -12,6 +11,9 @@ void main() {
 
   group('CampusOfflineTileProvider', () {
     test('recognizes all campus offline zoom levels', () {
+      // Zoom 13
+      expect(CampusOfflineTileProvider.hasOfflineAsset(13, 1868, 3575), isTrue);
+
       // Zoom 14
       expect(CampusOfflineTileProvider.hasOfflineAsset(14, 3737, 7151), isTrue);
       expect(CampusOfflineTileProvider.hasOfflineAsset(14, 3738, 7151), isTrue);

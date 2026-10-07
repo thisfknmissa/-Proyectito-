@@ -12,6 +12,8 @@ class CampusOfflineTileProvider extends TileProvider {
   /// Contiene cobertura completa del campus en niveles de zoom 14, 15, 16, 17 y 18.
   static bool hasOfflineAsset(int z, int x, int y) {
     switch (z) {
+      case 13:
+        return (x == 1868 || x == 1869) && y == 3575;
       case 14:
         return (x == 3737 || x == 3738) && y == 7151;
       case 15:
@@ -38,11 +40,11 @@ class CampusOfflineTileProvider extends TileProvider {
       return AssetImage('assets/tiles/${z}_${x}_${y}.png');
     }
 
-    // Respaldo en línea para áreas externas al campus
+    // Respaldo en línea para áreas externas al campus (ESRI World_Street_Map)
     return NetworkImage(
-      'https://tile.openstreetmap.org/$z/$x/$y.png',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/$z/$y/$x',
       headers: {
-        'User-Agent': 'com.uat.bus_tracker_uat (OfflineCampusTileProvider/2.2.0)',
+        'User-Agent': 'com.uat.bus_tracker_uat (CampusMap/2.2.1)',
       },
     );
   }

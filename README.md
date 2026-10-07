@@ -1,6 +1,6 @@
 # 🚌 Bus Tracker UAT Campus Sur
 
-App Flutter para rastrear el autobús interno del Campus Sur de la Universidad Autónoma de Tamaulipas (Tampico) **sin necesidad de GPS físico ni conexión a internet/backend**, con **funcionamiento 100% offline**, **animación de carga fluida** y **actualización continua en tiempo real (1s)**.
+App Flutter para rastrear el autobús interno del Campus Sur de la Universidad Autónoma de Tamaulipas (Tampico) **sin necesidad de GPS físico ni conexión a internet/backend**, con **funcionamiento 100% offline**, **animación de carga fluida**, **mapas ESRI sin bloqueos** y **actualización continua en tiempo real (1s)**.
 
 ---
 
@@ -10,37 +10,32 @@ Puedes descargar e instalar directamente el archivo APK en tu dispositivo Androi
 
 | Versión | Archivo APK | Descripción |
 |---|---|---|
-| **v2.2.0 (Más reciente)** | [Bus_UAT_Campus_Sur_v2.2.0.apk](releases/Bus_UAT_Campus_Sur_v2.2.0.apk) | **Ruta oficial exacta** con 85 waypoints, **mapa 100% offline integrado** (Zoom 14-18), **pantalla de carga animada** con radar y barra de progreso, velocidad calibrada 5-25 km/h, tiempos de parada (Caseta 5-10 min, otros 2 min) y Base de salida/llegada. |
+| **v2.2.1 (Más reciente)** | [Bus_UAT_Campus_Sur_v2.2.1.apk](releases/Bus_UAT_Campus_Sur_v2.2.1.apk) | **Solución definitiva al bloqueo 403**: Migración completa de la vista normal a **ESRI World_Street_Map** (mosaicos limpios de alta resolución sin bloqueos ni marcas de agua). Mapa offline integrado (Zoom 13 a 18), ruta oficial de 85 waypoints, animación de carga y paradas calibradas. |
+| **v2.2.0** | [Bus_UAT_Campus_Sur_v2.2.0.apk](releases/Bus_UAT_Campus_Sur_v2.2.0.apk) | Versión con ruta corregida y pantalla de carga animada. |
 | **v2.0.0** | [Bus_UAT_Campus_Sur_v2.0.0.apk](releases/Bus_UAT_Campus_Sur_v2.0.0.apk) | Versión con tema azul y nuevo orden de paradas. |
 | **v1.0.0** | [Bus_UAT_Campus_Sur_v1.0.0.apk](releases/Bus_UAT_Campus_Sur_v1.0.0.apk) | Versión inicial con mapa estándar OSM y tema naranja. |
 
-> 💡 El archivo [Bus_UAT_Campus_Sur.apk](Bus_UAT_Campus_Sur.apk) en la raíz del repositorio siempre corresponde a la **versión más reciente compilada (v2.2.0)**.
+> 💡 El archivo [Bus_UAT_Campus_Sur.apk](Bus_UAT_Campus_Sur.apk) en la raíz del repositorio siempre corresponde a la **versión más reciente compilada (v2.2.1)**.
 
 ---
 
-## ✨ Novedades en v2.2.0
+## ✨ Novedades en v2.2.1
 
-- 🛣️ **Ruta Exacta al Mapa de Referencia**:
-  - Trazado vectorial de **85 waypoints** que replica fielmente el circuito físico del campus:
-    - **Salida de la Base** (`22.277880, -97.865596`).
-    - Descenso por calle poniente pasando por **FIT** y **FADYCS**.
-    - Giro al oriente por calle sur hacia **FADU** y **FCAT**.
-    - Quiebre al norte y oriente por avenida central hacia el **GYM** y **Libros**.
-    - Subida recta por la avenida oriente hacia la **Caseta**.
-    - Retorno por **Calle Universidad de Veracruz** pasando por el área de **Comida** y cerrando el ciclo en la **Base**.
-- 📶 **100% OFFLINE (Sin Conexión ni Datos)**:
-  - Se incluyeron **91 mosaicos de mapa de alta resolución** (Zoom 14 a 18) empaquetados directamente dentro de la aplicación.
-  - La app y el mapa abren y funcionan de manera instantánea en modo avión, sótanos o aulas sin señal celular.
+- 🗺️ **Solución al error 403 en Vista Normal**:
+  - OpenStreetMap bloqueaba el acceso de aplicaciones móviles con una imagen de *"403 Access blocked"*.
+  - Se sustituyó completamente el proveedor de la vista normal por **ESRI World_Street_Map** (la misma infraestructura CDN empresarial de alta disponibilidad que utiliza la vista satelital).
+  - Todos los mosaicos empaquetados en el APK fueron reemplazados por mosaicos nítidos de ESRI, garantizando visualización limpia tanto online como offline.
+- 📶 **100% OFFLINE (Zoom 13 a 18)**:
+  - Se incluyeron **93 mosaicos de mapa de alta resolución** (ahora abarcando desde zoom 13 hasta zoom 18).
+  - La app y las calles cargan de forma instantánea sin requerir señal celular ni datos.
+- 🛣️ **Ruta Exacta al Mapa de Referencia (85 waypoints)**:
+  - Salida y cierre de jornada en la **Base** (`22.277880, -97.865596`).
+  - Circuito: Base ➔ FIT ➔ FADYCS ➔ FADU ➔ FCAT ➔ GYM ➔ Libros ➔ Caseta (5-10 min) ➔ Comida ➔ Base.
 - 🎬 **Pantalla de Carga Animada (Splash Screen)**:
-  - Al abrir la app se despliega una pantalla de bienvenida con identidad UAT, anillos concéntricos de radar/sonar emanando del autobús, barra de progreso dinámica y mensajes de estado que transicionan suavemente hacia el mapa.
-- ⏱️ **Tiempos de Espera Calibrados**:
-  - **Caseta principal**: Espera programada de **5 a 10 minutos** (promedio 7.5 min).
-  - **Paradas regulares**: Espera de **~2 minutos**.
-  - Visualización en vivo del tiempo restante detenido en cada estación.
-- ⚡ **Velocidad Variable (5 a 25 km/h)**:
-  - Velocidad promedio de 15 km/h con ajuste en horas pico (07:00–08:00 y 13:00–15:00).
-- 🟢 **Seguimiento en Vivo cada 1 Segundo**:
-  - Interpolación continua a lo largo de las curvas y calles sin saltos bruscos.
+  - Radar concéntrico con pulso sonar, barra de progreso y mensajes de inicialización.
+- ⏱️ **Tiempos de Espera y Velocidad Realista**:
+  - Espera en **Caseta: 5 a 10 min**; paradas intermedias: **~2 min**.
+  - Velocidad calibrada entre **5 y 25 km/h** con ajuste en horas pico.
 
 ---
 
